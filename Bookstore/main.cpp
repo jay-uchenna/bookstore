@@ -189,7 +189,7 @@ void write_to_database(std::vector <transac>& v_transactions){
     while (exit_write != 'x'){
         transac v_temp_transaction;
         std::string temp_ISBN;
-        std::cout << "enter ISBN: ";
+        std::cout << "enter ISBN (Should be a string without spaces): ";
         /*std::cin.clear();
         std::cin.ignore(INT_MAX, '\n');
         getline(std::cin, temp_ISBN);*/
@@ -373,9 +373,9 @@ void edit_transactions(std::vector <transac>& v_transactions){
     bool save_n_return = false;
     
     while(save_n_return == false){
-        std::cout << "Press edit ISBN Press 1\n"
-              << "Press edit copies sold Press 2\n"
-              << "Press edit cost of each(rub) 3\n"
+        std::cout << "to edit ISBN Press 1\n"
+              << "to edit copies sold Press 2\n"
+              << "to edit cost of each(rub) 3\n"
               << "your option: ";
     
         int option_to_edit;
