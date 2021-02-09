@@ -108,53 +108,52 @@ void app_interface(std::vector <transac>& v_transactions){
          std::cout << "0. to exit\n";
 
     
-         int chosen_option = 0;
+         char chosen_option = '0';
          std::cout << "your option: ";
          std::cin >> chosen_option;
     
          switch (chosen_option){
-             
-             case 1: write_to_database(v_transactions);
+             case '1': write_to_database(v_transactions);
                  break;
-             case 2: {
+             case '2': {
                  if (v_transactions.size() > 0) view_transactions(v_transactions);
                  else transac_empty_error_message();
                  break;
                  }
-             case 3: {
+             case '3': {
                  if (v_transactions.size() > 0) view_total_rev_avg(v_transactions);
                  else transac_empty_error_message();
                  break;
                  }
-            case 4: {
+            case '4': {
                 if (v_transactions.size() > 0) delete_transactions(v_transactions);
                 else transac_empty_error_message();
                 break;
                 }
                  break;
-            case 5: {
+            case '5': {
                 if (v_transactions.size() > 0) edit_transactions(v_transactions);
                 else transac_empty_error_message();
                 break;
                 }
                  break;
-             case 6: {
+             case '6': {
                  if (v_transactions.size() > 0) save_transactions(v_transactions);
                  else transac_empty_error_message();
                  break;
                  }
                  break;
             
-            case 7: {
+            case '7': {
                  std::cout << "are you sure you want to DELETE ALL in the data base?\npress Y to delete or any key to go back to menu: ";
                  char delete_choice;
                  std::cin >> delete_choice;
                  if (delete_choice == 'Y'|| delete_choice == 'y') create_database_file();
                  break;
                  }
-            case 0: return;
+            case '0': return;
                  
-            default: transac_empty_error_message();
+             default: transac_empty_error_message();
         
           }
     }
