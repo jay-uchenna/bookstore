@@ -97,13 +97,17 @@ void app_interface(std::vector <transac>& v_transactions){
          << "Press" << std::endl
         
          << "1. to add new transactions\n";
-        if ( v_transactions.size() > 0){
-         std::cout << "2. to view transactions\n"
-         << "3. to view total revenue and average sales price\n"
-         << "4. to delete a transaction\n"
-         << "5. to edit a transaction\n"
-         << "6. to save\n"
-         << "7. to delete all saved transactions\n";
+        bool dont_show = false;
+        if ( v_transactions.size() == 0){
+            dont_show = true;
+        }
+        else {
+            std::cout << "2. to view transactions\n"
+            << "3. to view total revenue and average sales price\n"
+            << "4. to delete a transaction\n"
+            << "5. to edit a transaction\n"
+            << "6. to save\n"
+            << "7. to delete all saved transactions\n";
         }
          std::cout << "0. to exit\n";
 
@@ -111,46 +115,45 @@ void app_interface(std::vector <transac>& v_transactions){
          char chosen_option = '0';
          std::cout << "your option: ";
          std::cin >> chosen_option;
+        if (chosen_option != '0' && chosen_option !='1' && dont_show == true){
+            transac_empty_error_message();
+            continue;
+        }
     
          switch (chosen_option){
              case '1': write_to_database(v_transactions);
                  break;
-             case '2': {
-                 if (v_transactions.size() > 0) view_transactions(v_transactions);
-                 else transac_empty_error_message();
+                 
+             case '2':
+                 view_transactions(v_transactions);
                  break;
-                 }
-             case '3': {
-                 if (v_transactions.size() > 0) view_total_rev_avg(v_transactions);
-                 else transac_empty_error_message();
+                 
+             case '3':
+                 view_total_rev_avg(v_transactions);
                  break;
-                 }
-            case '4': {
-                if (v_transactions.size() > 0) delete_transactions(v_transactions);
-                else transac_empty_error_message();
-                break;
-                }
+                 
+            case '4':
+                delete_transactions(v_transactions);
                  break;
-            case '5': {
-                if (v_transactions.size() > 0) edit_transactions(v_transactions);
-                else transac_empty_error_message();
-                break;
-                }
+                 
+            case '5':
+                edit_transactions(v_transactions);
                  break;
-             case '6': {
-                 if (v_transactions.size() > 0) save_transactions(v_transactions);
-                 else transac_empty_error_message();
-                 break;
-                 }
+                 
+             case '6':
+                 save_transactions(v_transactions);
                  break;
             
-            case '7': {
+            case '7':
                  std::cout << "are you sure you want to DELETE ALL in the data base?\npress Y to delete or any key to go back to menu: ";
                  char delete_choice;
                  std::cin >> delete_choice;
-                 if (delete_choice == 'Y'|| delete_choice == 'y') create_database_file();
-                 break;
+                 if (delete_choice == 'Y'|| delete_choice == 'y') {
+                     v_transactions.clear();
+                     create_database_file();
                  }
+                 break;
+                 
             case '0': return;
                  
              default: transac_empty_error_message();
