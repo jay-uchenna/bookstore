@@ -11,22 +11,13 @@
 #include <fstream>
 #include <cstdlib>          //for exit(1) 
 #include <iomanip>
+#include "average.hpp"
 
-struct transac{
-    std::string ISBN;
-    int no_of_books_sold;
-    double cost_of_each_book;
-};
-
-struct review_transacs{
-    transac element;
-    double avg_sales;
-};
 
 void read_database(std::vector <transac>& );
 void create_database_file();
 void app_interface(std::vector <transac>& );
-void view_transactions(std::vector <transac>);
+void view_transactions(const std::vector <transac>&);
 void write_to_database(std::vector <transac>&);
 void view_total_rev_avg(std::vector <transac>);
 std::vector <transac> unify_ISBN(std::vector <transac>); //to compute total number of copies sold and total revenue from a book
@@ -65,17 +56,22 @@ void read_database(std::vector <transac>& v_transactions){
     }
 
     while(!fin.eof()){
-
-        transac temp_transac;
         
-        fin >> temp_transac.ISBN;
-        fin >> temp_transac.no_of_books_sold;
-        fin >> temp_transac.cost_of_each_book;
+        std::string temp_ISBN;
+        int temp_no_of_books_sold;
+        double temp_cost_of_each_book;
         
-        if (temp_transac.no_of_books_sold > 0)v_transactions.push_back(temp_transac);
+        fin >> temp_ISBN;
+        fin >> temp_no_of_books_sold;
+        fin >> temp_cost_of_each_book;
+        
+        if (temp_no_of_books_sold > 0){
+            transac temp_transac(temp_ISBN,temp_no_of_books_sold,temp_cost_of_each_book);
+            v_transactions.push_back(temp_transac);
+        }
         
     }
-    
+        
     fin.close();
 }
 
@@ -97,17 +93,13 @@ void app_interface(std::vector <transac>& v_transactions){
          << "Press" << std::endl
         
          << "1. to add new transactions\n";
-        bool dont_show = false;
-        if ( v_transactions.size() == 0){
-            dont_show = true;
-        }
-        else {
-            std::cout << "2. to view transactions\n"
-            << "3. to view total revenue and average sales price\n"
-            << "4. to delete a transaction\n"
-            << "5. to edit a transaction\n"
-            << "6. to save\n"
-            << "7. to delete all saved transactions\n";
+        if ( v_transactions.size() > 0){
+         std::cout << "2. to view transactions\n"
+         << "3. to view total revenue and average sales price\n"
+         << "4. to delete a transaction\n"
+         << "5. to edit a transaction\n"
+         << "6. to save\n"
+         << "7. to delete all saved transactions\n";
         }
          std::cout << "0. to exit\n";
 
@@ -115,54 +107,57 @@ void app_interface(std::vector <transac>& v_transactions){
          char chosen_option = '0';
          std::cout << "your option: ";
          std::cin >> chosen_option;
-        if (chosen_option != '0' && chosen_option !='1' && dont_show == true){
-            transac_empty_error_message();
-            continue;
-        }
     
          switch (chosen_option){
              case '1': write_to_database(v_transactions);
                  break;
-                 
-             case '2':
-                 view_transactions(v_transactions);
+             case '2': {
+                 if (v_transactions.size() > 0) view_transactions(v_transactions);
+                 else transac_empty_error_message();
                  break;
-                 
-             case '3':
-                 view_total_rev_avg(v_transactions);
-                 break;
-                 
-            case '4':
-                delete_transactions(v_transactions);
-                 break;
-                 
-            case '5':
-                edit_transactions(v_transactions);
-                 break;
-                 
-             case '6':
-                 save_transactions(v_transactions);
-                 break;
-            
-            case '7':
-                 std::cout << "are you sure you want to DELETE ALL in the data base?\npress Y to delete or any key to go back to menu: ";
-                 char delete_choice;
-                 std::cin >> delete_choice;
-                 if (delete_choice == 'Y'|| delete_choice == 'y') {
-                     v_transactions.clear();
-                     create_database_file();
                  }
+             case '3': {
+                 if (v_transactions.size() > 0) view_total_rev_avg(v_transactions);
+                 else transac_empty_error_message();
                  break;
-                 
+                 }
+            case '4': {
+                if (v_transactions.size() > 0) delete_transactions(v_transactions);
+                else transac_empty_error_message();
+                break;
+                }
+            case '5': {
+                if (v_transactions.size() > 0) edit_transactions(v_transactions);
+                else transac_empty_error_message();
+                break;
+                }
+             case '6': {
+                 if (v_transactions.size() > 0) save_transactions(v_transactions);
+                 else transac_empty_error_message();
+                 break;
+                 }
+            case '7': {
+                if (v_transactions.size() > 0){
+                     std::cout << "are you sure you want to DELETE ALL in the data base?\npress Y to delete or any key to go back to menu: ";
+                     char delete_choice;
+                     std::cin >> delete_choice;
+                    if (delete_choice == 'Y'|| delete_choice == 'y'){
+                         create_database_file();
+                         v_transactions.clear();
+                    }
+                }
+                else transac_empty_error_message();
+                break;
+                }
             case '0': return;
                  
-             default: transac_empty_error_message();
+            default: transac_empty_error_message();
         
           }
     }
 
 }
-void view_transactions(std::vector <transac> display_transaactions){
+void view_transactions(const std::vector <transac>& display_transaactions){
     std::cout << '\n';
     const int lth_of_no = 13, lth_of_ISBN = 17, lth_of_books_sold = 13, lth_of_cost = 20;
     
@@ -178,9 +173,9 @@ void view_transactions(std::vector <transac> display_transaactions){
     
     for(int i = 0; i < display_transaactions.size(); i++){
         std::cout.width(lth_of_no); std::cout << std::left << i+1;
-        std::cout.width(lth_of_ISBN); std::cout  << std::left << display_transaactions[i].ISBN;
-        std::cout.width(lth_of_books_sold); std::cout  << std::right <<  display_transaactions[i].no_of_books_sold;
-        std::cout.width(lth_of_cost); std::cout << std::setprecision(2)  << std::right << std::fixed << display_transaactions[i].cost_of_each_book << std::endl;
+        std::cout.width(lth_of_ISBN); std::cout  << std::left << display_transaactions[i].get_ISBN();
+        std::cout.width(lth_of_books_sold); std::cout  << std::right <<  display_transaactions[i].get_no_of_books_sold();
+        std::cout.width(lth_of_cost); std::cout << std::setprecision(2)  << std::right << std::fixed << display_transaactions[i].get_cost_of_each_book() << std::endl;
     }
     
 }
@@ -189,7 +184,7 @@ void write_to_database(std::vector <transac>& v_transactions){
     std::string error_popup = "invalid input, press any key to try again or X to go to options menu\n ...";
     
     while (exit_write != 'x'){
-        transac v_temp_transaction;
+        
         std::string temp_ISBN;
         std::cout << "enter ISBN (Should be a string without spaces): ";
         /*std::cin.clear();
@@ -224,11 +219,8 @@ void write_to_database(std::vector <transac>& v_transactions){
             }
         exit_write = 'c';
         }while(exit_write != 'c');
-    
-        v_temp_transaction.ISBN = temp_ISBN;
-        v_temp_transaction.no_of_books_sold = temp_no_of_books_sold;
-        v_temp_transaction.cost_of_each_book = temp_cost_of_each_book;
-    
+        transac v_temp_transaction(temp_ISBN, temp_no_of_books_sold, temp_cost_of_each_book);
+        
         v_transactions.push_back(v_temp_transaction);
     
         std::cout << "press any key to add another transaction or X to go to options menu: ";
@@ -242,7 +234,7 @@ void view_total_rev_avg(std::vector <transac> v_transactions){
     
     v_sales_review = calculate_review(v_transactions);
     
-    std::cout << "size of v_sales_review: " << v_sales_review.size() << "\n";
+    //std::cout << "size of v_sales_review: " << v_sales_review.size() << "\n";
     
     std::cout << '\n';
     const int lth_of_no = 13, lth_of_ISBN = 17, lth_of_books_sold = 20, lth_of_cost = 22;
@@ -251,7 +243,7 @@ void view_total_rev_avg(std::vector <transac> v_transactions){
     std::cout.width(lth_of_ISBN); std::cout  << std::left << "ISBN";
     std::cout.width(lth_of_books_sold); std::cout  << std::right <<  "total copies sold";
     std::cout.width(lth_of_cost); std::cout << std::setprecision(2)  << std::right << std::fixed << "total revenue(rub)";
-    std::cout.width(lth_of_cost); std::cout << std::setprecision(2)  << std::right << std::fixed << "average cost(rub)" << std::endl;
+    std::cout.width(lth_of_cost); std::cout  << std::setprecision(2)  << std::right << std::fixed << "average cost(rub)" << std::endl;
     
     std::cout.fill('-');
     std::cout.width (lth_of_no + lth_of_ISBN + lth_of_books_sold + (2 * lth_of_cost));
@@ -260,10 +252,10 @@ void view_total_rev_avg(std::vector <transac> v_transactions){
     
     for(int i = 0; i < v_sales_review.size(); i++){
         std::cout.width(lth_of_no); std::cout << std::left << i+1;
-        std::cout.width(lth_of_ISBN); std::cout  << std::left << v_sales_review[i].element.ISBN;
-        std::cout.width(lth_of_books_sold); std::cout << std::right <<  v_sales_review[i].element.no_of_books_sold;
-        std::cout.width(lth_of_cost); std::cout << std::setprecision(2)  << std::right << std::fixed << v_sales_review[i].element.cost_of_each_book;
-        std::cout.width(lth_of_cost); std::cout << std::setprecision(2)  << std::right << std::fixed << v_sales_review[i].avg_sales << std::endl;
+        std::cout.width(lth_of_ISBN); std::cout  << std::left << v_sales_review[i].get_elements().get_ISBN();
+        std::cout.width(lth_of_books_sold); std::cout << std::right <<  v_sales_review[i].get_elements().get_no_of_books_sold();
+        std::cout.width(lth_of_cost); std::cout << std::setprecision(2)  << std::right << std::fixed << v_sales_review[i].get_elements().get_cost_of_each_book();
+        std::cout.width(lth_of_cost); std::cout << std::setprecision(2)  << std::right << std::fixed << v_sales_review[i].get_avg_sales() << std::endl;
     }
     
     
@@ -273,21 +265,17 @@ std::vector <review_transacs> calculate_review(std::vector <transac> v_transacti
     
     std::vector <transac> v_trans_unified = unify_ISBN(v_transactions);
     
-    std::cout << "size of unified " << v_trans_unified.size() << "\n";
+    //std::cout << "size of unified " << v_trans_unified.size() << "\n";
 
     std::vector <review_transacs> v_sales_review;
 
     for(int i = 0; i < v_trans_unified.size(); i++){
-        review_transacs temp;
+        review_transacs temp( v_trans_unified[i].get_ISBN(), v_trans_unified[i].get_no_of_books_sold(), v_trans_unified[i].get_cost_of_each_book());
         
-        temp.element.ISBN = v_trans_unified[i].ISBN;
-        temp.element.no_of_books_sold = v_trans_unified[i].no_of_books_sold;
-        temp.element.cost_of_each_book = v_trans_unified[i].cost_of_each_book;
-        temp.avg_sales = v_trans_unified[i].cost_of_each_book / v_trans_unified[i].no_of_books_sold;
         v_sales_review.push_back(temp);
     }
     
-    std::cout << "size of unified " << v_sales_review.size() << "\n";
+    //std::cout << "size of unified " << v_sales_review.size() << "\n";
         
     
     return v_sales_review;
@@ -299,10 +287,10 @@ std::vector <transac> unify_ISBN(std::vector <transac> v_transactions){
     for(int i = 0; i < v_transactions.size(); i++){
         int j = 0; //index manipultor for v_sales_review
         for ( ; j < v_trans_unified.size(); j++){
-            if(v_transactions[i].ISBN == v_trans_unified[j].ISBN){
+            if(v_transactions[i].get_ISBN() == v_trans_unified[j].get_ISBN()){
                 
-                v_trans_unified[j].no_of_books_sold += v_transactions[i].no_of_books_sold;
-                v_trans_unified[j].cost_of_each_book += (v_transactions[i].cost_of_each_book * v_transactions[i].no_of_books_sold);
+                v_trans_unified[j].set_no_of_books_sold(v_trans_unified[j].get_no_of_books_sold() + v_transactions[i].get_no_of_books_sold());
+                v_trans_unified[j].set_cost_of_each_book(v_trans_unified[j].get_cost_of_each_book() + (v_transactions[i].get_cost_of_each_book() * v_transactions[i].get_no_of_books_sold()));
             
                 break;
             }
@@ -310,11 +298,7 @@ std::vector <transac> unify_ISBN(std::vector <transac> v_transactions){
         }
         
         if (j == v_trans_unified.size()){
-            transac temp;
-            
-            temp.ISBN = v_transactions[i].ISBN;
-            temp.no_of_books_sold = v_transactions[i].no_of_books_sold;
-            temp.cost_of_each_book = v_transactions[i].cost_of_each_book * v_transactions[i].no_of_books_sold;
+            transac temp(v_transactions[i].get_ISBN(), v_transactions[i].get_no_of_books_sold(), v_transactions[i].get_cost_of_each_book() * v_transactions[i].get_no_of_books_sold());
             
             v_trans_unified.push_back(temp);
         }
@@ -326,6 +310,10 @@ std::vector <transac> unify_ISBN(std::vector <transac> v_transactions){
 void delete_transactions(std::vector <transac>& v_transactions){
     
     view_transactions(v_transactions);
+    if (v_transactions.size() == 1) {
+        v_transactions.clear();
+        return;
+    }
     std::cout << "for single element delete press A | for range delete press B: ";
     char delete_type;
     std::cin >> delete_type;
@@ -393,20 +381,20 @@ void edit_transactions(std::vector <transac>& v_transactions){
             std::string temp_ISBN;
             std::cout << "enter new ISBN: ";
             std::cin >> temp_ISBN;
-            v_transactions[transac_no_to_edit].ISBN = temp_ISBN;
+            v_transactions[transac_no_to_edit].set_ISBN ( temp_ISBN);
             
         }
         else if (option_to_edit == 1){
             int temp_copies_sold;
             std::cout << "enter new copies sold: ";
             std::cin >> temp_copies_sold;
-            v_transactions[transac_no_to_edit].no_of_books_sold = temp_copies_sold;
+            v_transactions[transac_no_to_edit].set_no_of_books_sold (temp_copies_sold);
         }
         else if (option_to_edit == 2){
             double cost_of_each;
             std::cout << "enter new cost of each(rub): ";
             std::cin >> cost_of_each;
-            v_transactions[transac_no_to_edit].cost_of_each_book = cost_of_each;
+            v_transactions[transac_no_to_edit].set_cost_of_each_book (cost_of_each);
             
         }
                     
@@ -426,7 +414,7 @@ void save_transactions(std::vector <transac> v_transactions){
     
     int rec_count = 0;
     for(std::vector <transac>:: iterator it = v_transactions.begin(); it != v_transactions.end(); it++){
-        fout << it->ISBN << " " << it->no_of_books_sold << " " << it->cost_of_each_book;
+        fout << it->get_ISBN() << " " << it->get_no_of_books_sold() << " " << it->get_cost_of_each_book();
         rec_count++;
         if (rec_count != v_transactions.size()) fout << "\n";
     }

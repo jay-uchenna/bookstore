@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		193E32AF2760F102000ECC48 /* average.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 193E32AD2760F102000ECC48 /* average.cpp */; };
 		199A91E325CA422900BCCB58 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 199A91E225CA422900BCCB58 /* main.cpp */; };
+		19BAB58A272C53F900691CA1 /* bookstore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 19BAB588272C53F900691CA1 /* bookstore.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,8 +25,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		193E32AD2760F102000ECC48 /* average.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = average.cpp; sourceTree = "<group>"; };
+		193E32AE2760F102000ECC48 /* average.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = average.hpp; sourceTree = "<group>"; };
 		199A91DF25CA422900BCCB58 /* Bookstore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Bookstore; sourceTree = BUILT_PRODUCTS_DIR; };
 		199A91E225CA422900BCCB58 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		19BAB588272C53F900691CA1 /* bookstore.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bookstore.cpp; sourceTree = "<group>"; };
+		19BAB589272C53F900691CA1 /* bookstore.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = bookstore.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +64,10 @@
 			isa = PBXGroup;
 			children = (
 				199A91E225CA422900BCCB58 /* main.cpp */,
+				193E32AD2760F102000ECC48 /* average.cpp */,
+				193E32AE2760F102000ECC48 /* average.hpp */,
+				19BAB588272C53F900691CA1 /* bookstore.cpp */,
+				19BAB589272C53F900691CA1 /* bookstore.hpp */,
 			);
 			path = Bookstore;
 			sourceTree = "<group>";
@@ -88,7 +98,7 @@
 		199A91D725CA422900BCCB58 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1240;
+				LastUpgradeCheck = 1320;
 				TargetAttributes = {
 					199A91DE25CA422900BCCB58 = {
 						CreatedOnToolsVersion = 12.4;
@@ -118,6 +128,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				193E32AF2760F102000ECC48 /* average.cpp in Sources */,
+				19BAB58A272C53F900691CA1 /* bookstore.cpp in Sources */,
 				199A91E325CA422900BCCB58 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -239,6 +251,7 @@
 		199A91E725CA422900BCCB58 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -247,6 +260,7 @@
 		199A91E825CA422900BCCB58 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
